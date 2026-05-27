@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>채용검색기 50+Jason</title>
+<style>
+:root{
+  --p:#1a56a0;--pd:#0d3d7a;--pl:#e8f0fb;
+  --g:#2d7a3a;--gl:#e8f5eb;
+  --a:#b85c00;--al:#fff3e0;
+  --r:#c0392b;
+  --bd:#dde1e9;--bg:#f0f2f5;
+  --tx:#1a1d23;--tm:#6b7280;--tl:#9ca3af;
+  --wh:#fff;--sh:0 2px 8px rgba(0,0,0,.1);--rd:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg)}
+body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--tx);font-size:14px;display:flex;flex-direction:column;overflow:hidden}
+.hdr{background:var(--p);color:#fff;padding:0 14px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.hdr-t{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px}
+.hdr-badge{font-size:10px;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:20px}
+.hdr-r{font-size:10px;opacity:.65}
+.srch{background:var(--wh);padding:10px 12px 8px;flex-shrink:0;box-shadow:var(--sh)}
+.kw-row{display:flex;gap:6px;margin-bottom:8px}
+.kw-inp{flex:1;height:42px;border:1.5px solid var(--bd);border-radius:10px;padding:0 12px;font-size:15px;font-family:inherit;color:var(--tx);background:var(--bg)}
+.kw-inp:focus{outline:none;border-color:var(--p);background:var(--wh)}
+.btn-srch{height:42px;padding:0 16px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:20px;cursor:pointer;flex-shrink:0}
+.btn-srch:active{background:var(--pd)}
+.btn-srch:disabled{opacity:.5}
+.fg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.fi label{display:block;font-size:10px;font-weight:700;color:var(--tm);margin-bottom:2px}
+.fi select{width:100%;height:33px;border:1px solid var(--bd);border-radius:8px;padding:0 6px;font-size:11px;font-family:inherit;color:var(--tx);background:var(--wh)}
+.rbar{display:none;padding:5px 12px;background:var(--wh);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);flex-shrink:0;align-items:center;justify-content:space-between}
+.rstat{font-size:11px;color:var(--tm)}.rstat strong{color:var(--tx);font-weight:700}
+.body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 10px 60px}
+.jlist{display:flex;flex-direction:column;gap:8px}
+.jcard{background:var(--wh);border-radius:var(--rd);padding:13px;box-shadow:var(--sh);border-left:4px solid var(--p);position:relative}
+.jc-num{position:absolute;top:10px;right:12px;font-size:10px;color:var(--tl);font-weight:600}
+.jc-corp{font-size:11px;font-weight:700;color:var(--p);margin-bottom:3px;padding-right:28px}
+.jc-title{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:8px;line-height:1.45;padding-right:28px}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;margin-bottom:6px}
+.b-bl{background:var(--pl);color:var(--pd)}.b-am{background:var(--al);color:var(--a)}.b-gr{background:var(--gl);color:var(--g)}.b-gy{background:#f0f2f5;color:#555}
+.jc-meta{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:8px}
+.jc-it{font-size:11px;color:var(--tm);display:flex;align-items:center;gap:3px;overflow:hidden}
+.jc-it span{color:var(--tx);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jc-dead{display:flex;justify-content:space-between;align-items:center;padding:5px 9px;background:var(--bg);border-radius:7px;margin-bottom:8px;font-size:11px}
+.dead-lbl{color:var(--tm)}.dead-ok{color:var(--g);font-weight:600}.dead-warn{color:var(--r);font-weight:700}.dead-exp{color:var(--tl)}
+.btn-go{display:flex;align-items:center;justify-content:center;width:100%;height:40px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none}
+.btn-go:active{background:var(--pd)}
+.pg{display:flex;justify-content:center;gap:5px;margin-top:12px;flex-wrap:wrap}
+.pb{height:32px;min-width:32px;padding:0 8px;border:1px solid var(--bd);border-radius:8px;background:var(--wh);font-size:13px;cursor:pointer;color:var(--tm);font-family:inherit;font-weight:500}
+.pb:active{background:var(--bg)}.pb.on{background:var(--p);color:#fff;border-color:var(--p);font-weight:700}.pb:disabled{opacity:.3}
+.empty{text-align:center;padding:50px 20px;color:var(--tl)}
+.ei{font-size:50px;margin-bottom:10px;display:block}
+.empty p{font-size:13px;line-height:1.7;color:var(--tm)}
+.spin{width:34px;height:34px;border:3px solid #dde1e9;border-top-color:var(--p);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(20,20,20,.88);color:#fff;padding:10px 20px;border-radius:24px;font-size:12px;z-index:999;display:none;max-width:88vw;text-align:center;line-height:1.5}
+.foot{position:fixed;bottom:0;left:0;right:0;padding:5px;font-size:9px;color:var(--tl);text-align:center;background:rgba(255,255,255,.95);border-top:1px solid var(--bd)}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-t">💼 채용검색기 <span class="hdr-badge">50+Jason</span></div>
+  <div class="hdr-r">중장년취업코디(동부)</div>
+</div>
+<div class="srch">
+  <div class="kw-row">
+    <input type="search" id="kw" class="kw-inp" placeholder="직무 · 기업 · 키워드 검색" enterkeyhint="search" onkeydown="if(event.key==='Enter'){this.blur();doSearch()}">
+    <button class="btn-srch" id="sb" onclick="doSearch()">🔍</button>
+  </div>
+  <div class="fg">
+    <div class="fi"><label>지역</label>
+      <select id="loc">
+        <option value="">전국</option>
+        <optgroup label="서울">
+          <option value="101000">서울 전체</option>
+          <option value="101010">강남구</option><option value="101020">강동구</option>
+          <option value="101030">강북구</option><option value="101040">강서구</option>
+          <option value="101050">관악구</option><option value="101060">광진구</option>
+          <option value="101070">구로구</option><option value="101080">금천구</option>
+          <option value="101090">노원구</option><option value="101100">도봉구</option>
+          <option value="101110">동대문구</option><option value="101120">동작구</option>
+          <option value="101130">마포구</option><option value="101140">서대문구</option>
+          <option value="101150">서초구</option><option value="101160">성동구</option>
+          <option value="101170">성북구</option><option value="101180">송파구</option>
+          <option value="101190">양천구</option><option value="101200">영등포구</option>
+          <option value="101210">용산구</option><option value="101220">은평구</option>
+          <option value="101230">종로구</option><option value="101240">중구</option>
+          <option value="101250">중랑구</option>
+        </optgroup>
+        <optgroup label="경기">
+          <option value="102000">경기 전체</option>
+          <option value="102010">수원시</option><option value="102020">성남시</option>
+          <option value="102030">의정부시</option><option value="102040">안양시</option>
+          <option value="102050">부천시</option><option value="102060">광명시</option>
+          <option value="102080">평택시</option><option value="102100">안산시</option>
+          <option value="102110">고양시</option><option value="102130">남양주시</option>
+          <option value="102150">화성시</option><option value="102160">용인시</option>
+          <option value="102170">파주시</option><option value="102185">구리시</option>
+          <option value="102195">하남시</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="fi"><label>고용형태</label>
+      <select id="jt">
+        <option value="">전체</option><option value="1">정규직</option>
+        <option value="2">계약직</option><option value="3">인턴</option><option value="4">알바</option>
+      </select>
+    </div>
+    <div class="fi"><label>경력</label>
+      <select id="exp">
+        <option value="">전체</option><option value="1">신입</option>
+        <option value="2">경력</option><option value="3">신입·경력</option>
+      </select>
+    </div>
+    <div class="fi"><label>연봉</label>
+      <select id="sal">
+        <option value="">전체</option>
+        <option value="2">2400만↑</option><option value="3">3000만↑</option>
+        <option value="4">3600만↑</option><option value="5">4200만↑</option>
+      </select>
+    </div>
+    <div class="fi"><label>정렬</label>
+      <select id="srt">
+        <option value="pd">최신순</option><option value="pt">마감순</option>
+        <option value="sc">관련도</option><option value="sm">급여순</option>
+      </select>
+    </div>
+    <div class="fi"><label>건수</label>
+      <select id="cnt">
+        <option value="10">10건</option>
+        <option value="20" selected>20건</option>
+        <option value="30">30건</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="rbar" id="rbar">
+  <span class="rstat">총 <strong id="tc">0</strong>건 · <strong id="pc">0</strong>건 표시</span>
+</div>
+<div class="body" id="mainBody">
+  <div id="ld" class="empty" style="display:none"><div class="spin"></div><p>검색 중입니다...</p></div>
+  <div id="em" class="empty" style="display:none"><span class="ei">📭</span><p id="emMsg">검색 결과가 없습니다.</p></div>
+  <div id="init" class="empty"><span class="ei">🔍</span><p>키워드와 조건을 설정하고<br><strong>검색 버튼</strong>을 눌러주세요.</p></div>
+  <div class="jlist" id="jlist"></div>
+  <div class="pg" id="pg"></div>
+</div>
+<div class="foot">사람인(saramin.co.kr) 제공 | 서울시50+중장년취업코디(동부) · JasonJung</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY  = 'Bi0yZ1iLm5pleggEpjdIVOfsgmyozIomwihPf0gAl7oppNl7ZWIK';
+const BASE = 'https://saramin-proxy.jasonjung70.workers.dev/job-search';
+let jobs=[], curP=1, totP=1, totC=0, pendingCnt=20;
+const now = new Date();
+
+function toast(msg,ms=3000){
+  const t=document.getElementById('toast');
+  t.innerHTML=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',ms);
+}
+function setLoading(on){
+  document.getElementById('ld').style.display=on?'block':'none';
+  const b=document.getElementById('sb');b.disabled=on;b.textContent=on?'⏳':'🔍';
+}
+function showError(msg){
+  setLoading(false);
+  document.getElementById('em').style.display='block';
+  document.getElementById('emMsg').innerHTML='⚠️ '+msg;
+  toast('❌ '+msg,4000);
+}
+function jtName(c){return{1:'정규직',2:'계약직',3:'인턴',4:'알바'}[c]||'-';}
+function jtBadge(c){const m={1:'b-bl',2:'b-am',3:'b-gr',4:'b-gy'};return c?'<span class="badge '+( m[c]||'b-gy')+'">'+jtName(c)+'</span>':'';}
+function expStr(n,x,nm){if(nm)return nm;if(n===0&&x===0)return'경력무관';if(n===0)return'신입';return'경력 '+n+'년↑';}
+function salStr(c){return{1:'회사내규',2:'2400만↑',3:'3000만↑',4:'3600만↑',5:'4200만↑',6:'5000만↑'}[String(c)]||'면접후결정';}
+function deadInfo(ts){
+  if(!ts)return{t:'상시채용',c:'dead-ok'};
+  const d=new Date(ts*1000),diff=Math.ceil((d-now)/864e5);
+  const s=d.getFullYear()+'.'+(String(d.getMonth()+1).padStart(2,'0'))+'.'+String(d.getDate()).padStart(2,'0');
+  if(diff<0)return{t:'마감됨('+s+')',c:'dead-exp'};
+  if(diff===0)return{t:'오늘마감!('+s+')',c:'dead-warn'};
+  if(diff<=7)return{t:'D-'+diff+'·'+s,c:'dead-warn'};
+  return{t:s,c:'dead-ok'};
+}
+
+function doSearch(p){
+  if(!p){p=1;curP=1;}
+  pendingCnt=parseInt(document.getElementById('cnt').value);
+  const kw=document.getElementById('kw').value.trim();
+  const loc=document.getElementById('loc').value;
+  const jt=document.getElementById('jt').value;
+  const exp=document.getElementById('exp').value;
+  const sal=document.getElementById('sal').value;
+  const srt=document.getElementById('srt').value;
+  const cnt=pendingCnt;
+
+  // URL 파라미터 수동 조합 (URLSearchParams 대신 — 호환성 최대화)
+  let qs='access-key='+encodeURIComponent(KEY);
+  qs+='&count='+cnt;
+  qs+='&start='+((p-1)*cnt+1);
+  qs+='&sort='+srt;
+  if(kw)  qs+='&keywords='+encodeURIComponent(kw);
+  if(loc) qs+='&loc_cd='+loc;
+  if(jt)  qs+='&job_type='+jt;
+  if(exp) qs+='&exp_cd='+exp;
+  if(sal) qs+='&sal_cd='+sal;
+
+  const url = BASE+'?'+qs;
+
+  ['init','em'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('jlist').innerHTML='';
+  document.getElementById('pg').innerHTML='';
+  document.getElementById('rbar').style.display='none';
+  setLoading(true);
+  document.getElementById('mainBody').scrollTo({top:0,behavior:'smooth'});
+
+  // ★ XHR로 직접 API 호출 (https:// 환경에서 작동)
+  callApi(url, cnt, p);
+}
+
+// App Inventor 블록2에서 호출:
+// call WebViewer1.RunJavaScript  script: join["gotData("] [Web1.ResponseContent] [")"]
+function gotData(data){
+  try{ processData(typeof data==='string'?JSON.parse(data):data, pendingCnt, curP); }
+  catch(e){ showError('파싱오류: '+e.message); }
+}
+
+function callApi(url, cnt, p){
+  const xhr=new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.setRequestHeader('Accept','application/json');
+  xhr.timeout=15000;
+  xhr.onload=function(){
+    if(xhr.status>=200&&xhr.status<300){
+      try{ processData(JSON.parse(xhr.responseText),cnt,p); }
+      catch(e){ showError('데이터 오류'); }
+    } else if(xhr.status===401||xhr.status===403){
+      showError('API Key 오류');
+    } else if(xhr.status===429){
+      showError('일일 한도(500회) 초과');
+    } else {
+      showError('서버오류: '+xhr.status);
+    }
+  };
+  xhr.onerror=function(){ showError('네트워크 오류'); };
+  xhr.ontimeout=function(){ showError('시간 초과'); };
+  xhr.send();
+}
+
+function processData(data,cnt,p){
+  const jd=data&&data.jobs;
+  if(!jd){showError('응답 오류');return;}
+  totC=parseInt(jd.total||0);
+  jobs=Array.isArray(jd.job)?jd.job:(jd.job?[jd.job]:[]);
+  curP=p; totP=Math.ceil(totC/cnt);
+  document.getElementById('tc').textContent=totC.toLocaleString();
+  document.getElementById('pc').textContent=jobs.length;
+  setLoading(false);
+  if(!jobs.length){
+    document.getElementById('em').style.display='block';
+    document.getElementById('emMsg').innerHTML='검색 결과가 없습니다.<br>조건을 바꿔보세요.';
+  } else {
+    renderCards(jobs,cnt,p);
+    renderPg(cnt);
+    document.getElementById('rbar').style.display='flex';
+    toast('✅ '+totC.toLocaleString()+'건 검색 완료');
+  }
+}
+
+function renderCards(list,cnt,p){
+  const el=document.getElementById('jlist');
+  el.innerHTML='';
+  const off=(p-1)*cnt;
+  list.forEach(function(v,i){
+    const corp=(v.company&&v.company.detail&&v.company.detail.name)||'-';
+    const title=(v.position&&v.position.title)||'-';
+    const locRaw=(v.position&&v.position.location&&v.position.location.name)||'-';
+    const loc=locRaw.replace(/&gt;/g,'>').replace(/>/g,' › ');
+    const jtc=(v.position&&v.position['job-type']&&v.position['job-type'].code)||'';
+    const elv=(v.position&&v.position['experience-level'])||{};
+    const emin=elv.min||0,emax=elv.max||0,enm=elv.name||'';
+    const sc=(v.salary&&v.salary.code)||'';
+    const ts=v['expiration-timestamp']||null;
+    const url=v.url||'#';
+    const dl=deadInfo(ts);
+    const card=document.createElement('div');
+    card.className='jcard';
+    if(dl.c==='dead-warn')card.style.borderLeftColor='var(--r)';
+    if(dl.c==='dead-exp')card.style.borderLeftColor='var(--tl)';
+    card.innerHTML=
+      '<div class="jc-num">'+(off+i+1)+'</div>'+
+      '<div class="jc-corp">'+corp+'</div>'+
+      '<div class="jc-title">'+title+'</div>'+
+      jtBadge(jtc)+
+      '<div class="jc-meta">'+
+        '<div class="jc-it">📍<span>'+loc+'</span></div>'+
+        '<div class="jc-it">💼<span>'+expStr(emin,emax,enm)+'</span></div>'+
+        '<div class="jc-it">💰<span>'+salStr(sc)+'</span></div>'+
+      '</div>'+
+      '<div class="jc-dead"><span class="dead-lbl">⏰ 마감일</span>'+
+      '<span class="'+dl.c+'">'+dl.t+'</span></div>'+
+      '<a href="'+url+'" target="_blank" rel="noopener" class="btn-go">채용공고 바로가기 →</a>';
+    el.appendChild(card);
+  });
+}
+
+function renderPg(cnt){
+  const pg=document.getElementById('pg');pg.innerHTML='';
+  if(totP<=1)return;
+  function mk(l,p,dis,on){
+    const b=document.createElement('button');
+    b.className='pb'+(on?' on':'');b.textContent=l;b.disabled=dis;
+    if(!dis)b.onclick=function(){doSearch(p);};return b;
+  }
+  pg.appendChild(mk('«',1,curP===1,false));
+  pg.appendChild(mk('‹',curP-1,curP===1,false));
+  var s=Math.max(1,curP-2),e=Math.min(totP,s+4);
+  for(var i=s;i<=e;i++)pg.appendChild(mk(i,i,false,i===curP));
+  pg.appendChild(mk('›',curP+1,curP===totP,false));
+  pg.appendChild(mk('»',totP,curP===totP,false));
+}
+</script>
+</body>
+</html>
